@@ -1,1 +1,1 @@
-Algunas animaciones hechas con Manim, código aquí y animaciones en GitHub.
+Algunas animaciones hechas con Manim, código aquí y animaciones en Youtube.
