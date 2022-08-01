@@ -1,0 +1,1 @@
+Algunas animaciones hechas con Manim, código aquí y animaciones en GitHub.
