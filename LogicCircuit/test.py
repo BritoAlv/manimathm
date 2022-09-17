@@ -1,3 +1,4 @@
+from ast import For
 from manim import*
 #global variable.
 groups = [[],[],[]] # number of grupos de la animación.
@@ -8,8 +9,9 @@ objects = [] # don't change this.
 class circuit_component: # general class with shared properties.
 	def __init__(self, group, text):
 		self.obj = None
-		self.is_isolated = False
+		self.is_cyclic = False
 		self.value = None
+		self.persist = False
 		self.input = None
 		self.color = WHITE
 		self.show_text = text
@@ -49,17 +51,28 @@ class dot(circuit_component): # a simple dot, designed and only can be used to j
 	def set_value(self):
 		self.value = self.input.value
 
-class isolated_dot(circuit_component):
+class cyclic_dot(circuit_component):
 	'''
-	the trick is put this dot in two groups, so that its value gets update twice, first time
-	it will be when created that will take its default value, and after will be when updated.
+	a dot that allow cycles in the circuit, first it is used with a default value in after that it uses
+	the value passed to it in its input, a cyclic dot, need an input before render the scene by definition
+	so connect to something it, check example in scene.
+
+	This was designed to be able to implement "Prestamo o Arrastre " in the Add Circuit.
+
+	Notice that the value of the cyclic dot persist, ie, when the input change at input dots the value of
+	the cyclic dot is the same, to change this behaviour so that each time change input ar input dots the 
+	cyclic dot use its defualt value, set persist option to false when creating the dot.
+ 
+
 	'''
-	def __init__(self, pos, group , input = [0], text= False ): # input has to be a list.
+	def __init__(self, pos, group , input = 0, text= False, persist = True ): # input has to be a list.
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(pos)
 		self.input = None
-		self.is_isolated = True
+		self.is_cyclic = True
+		self.persist = persist
 		self.default_input = input
+		self.used_default_input = False
 		self.objj = VGroup(self.obj).set_color(WHITE)
 		objects.append(self)
 		groups[group].append(self)
@@ -73,11 +86,14 @@ class isolated_dot(circuit_component):
 		groups[group].append(self)
 		component_to_connect.objj.add(self.view)
 		self.input = component_to_connect			
-	def set_value(self, value, default  = True ):
-		if(default == True):
-			self.value = value
+	def set_value(self):
+		if(self.used_default_input == False):
+			self.value = self.default_input
+			self.used_default_input = True
 		else:
-			self.value = self.input.value	
+			self.value = self.input.value
+			if (self.persist == False):
+				 self.used_default_input == False
 
 
 class comp_or(circuit_component): # or component
@@ -158,8 +174,23 @@ class comp_not(circuit_component): #not component
 
 class A(Scene):
 	def construct(self):
-		# objects need to be in order.
-		""" 		
+		################################################################
+		### objects need to be defined in order.
+		### the scene will be updated group by group put each object in
+		### its group, cyclic and input dots are in the first group always.
+		### to add an input to an cyclic dot call the method update_view, 
+		### passing as arguments the new group where it will be and the component 
+		### uncomment one of the scenes to render it.
+		### at top of page is a global variable "groups", modify it with
+		### the numbers of groups in your animation.
+		### diference of an cyclic dot and an input dot is that cyclic dote have 
+		### input, so they work in the following way, first time is used a default value for
+		### them and after that is value is determined by the circuit and the input appended to it.
+		################################################################
+		input_size = 1
+		"""
+		Scene Example 1
+		input_size = 3 # your input dots have input of len 3 		
 		a = input_dot([1,1,0],0, [1,1,0], text = True)
 		b = dot([2,1,0],1, a)
 		c = input_dot([1,2,0],0, [1,0,1], text = True)
@@ -170,41 +201,54 @@ class A(Scene):
 		h = dot([g.get_x()+0.4, g.get_y()-0.3, 0], 2, g)
 		l = comp_not(2, h, text = True)
 		"""
-		a = isolated_dot( [0,0,0], 0, input = [0,1,2])
+
+		
+		
+		input_size = 3 # your input dots have input of len 2
+		a = cyclic_dot( [0,0,0], 0, input = 1)
 		b = dot([1,0,0], 1, a)
 		c = comp_not(1, b)
 		d = dot([1,1,0], 2, c )
 		e = dot([0,1,0], 2, d)
 		a.update_view(2, e)
+		
 
+		################################################################
+		#### don't change anything below
+		################################################################
 
 		# first step is to add all objects to scene
+		not_cyclic_objects = []
+		cyclic_not_persistent = []
 		for ob in objects:
 			self.add(ob.objj)
+			if (ob.is_cyclic == True and ob.persist == False):
+				cyclic_not_persistent.append(ob)
+			if (ob.is_cyclic == True and ob.persist == True):
+				pass
+			else:
+				not_cyclic_objects.append(ob)
+		
 		self.wait()
 		# animation steps
 		# animate each group with starting values given by the inputs.
 		# obtain values
-		for i in range(0, 2): # 2 because the input is of size 3
+		for i in range(0, input_size): # 2 because the input is of size 3
 			for j in range(0, len(groups)):
 				if j == 0: # we are dealing with input dots
 					for obj in groups[j]:
-						if(obj.is_isolated == True):
-							# obj is an isolated circuit component object
-							obj.set_value(obj.default_input[i], default = True)
+						if(obj.is_cyclic == True):
+							# obj is an cyclic circuit component object
+							obj.set_value()
+							 # we update only once the value of the cyclic dot.
 						else:
 							# obj is an circuit component object
 							obj.set_value(obj.input[i])
-						obj.set_text()								
+							obj.set_text()								
 				else:
 					for obj in groups[j]:
-						if(obj.is_isolated == True):
-							# obj is an isolated circuit component object
-							obj.set_value(obj.default_input[i], default = False)
-						else:
-							# obj is an circuit component object
 							obj.set_value()
-						obj.set_text()
+							obj.set_text()
 				# after all objects in same group have its values updated
 				# we have to update its text and its color with an animation and that's all
 				# the value was updated so this mean that we have to update its color and text
@@ -215,12 +259,16 @@ class A(Scene):
 						temp.append(obj)
 				self.play(AnimationGroup(*[(Create(obj.text)) for obj in temp]))
 			# now we need to put everything to the original state without text, and without colors
-			self.play(AnimationGroup(*[FadeToColor(obj.objj, WHITE)  for obj in objects]))
+			
+			self.play(AnimationGroup(*[FadeToColor(obj.objj, WHITE)  for obj in not_cyclic_objects]))
+			self.wait()
 			temp = []
 			for obj in objects:
 				if obj.show_text:
 					temp.append(obj)			
 			self.play(AnimationGroup(*[(FadeOut(obj.text)) for obj in temp]))
+			for ob in cyclic_not_persistent:
+				ob.used_default_input = False
 
 					
 						
