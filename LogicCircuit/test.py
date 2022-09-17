@@ -8,6 +8,7 @@ objects = [] # don't change this.
 class circuit_component: # general class with shared properties.
 	def __init__(self, group, text):
 		self.obj = None
+		self.is_isolated = False
 		self.value = None
 		self.input = None
 		self.color = WHITE
@@ -32,7 +33,7 @@ class input_dot(circuit_component): # a dot that receives input designed for sta
 	def set_value(self, value):
 		self.value = value
 
-class dot(circuit_component): # a simple dot, designed for joining different parts of the circuit.
+class dot(circuit_component): # a simple dot, designed and only can be used to join different parts of the circuit.
 	def __init__(self, pos, group , component_to_connect, use_arc = False, text= False): #  
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(pos)
@@ -47,6 +48,36 @@ class dot(circuit_component): # a simple dot, designed for joining different par
 		groups[group].append(self)
 	def set_value(self):
 		self.value = self.input.value
+
+class isolated_dot(circuit_component):
+	'''
+	the trick is put this dot in two groups, so that its value gets update twice, first time
+	it will be when created that will take its default value, and after will be when updated.
+	'''
+	def __init__(self, pos, group , input = [0], text= False ): # input has to be a list.
+		circuit_component.__init__(self, group, text)
+		self.obj = Dot(pos)
+		self.input = None
+		self.is_isolated = True
+		self.default_input = input
+		self.objj = VGroup(self.obj).set_color(WHITE)
+		objects.append(self)
+		groups[group].append(self)
+
+	def update_view(self, group, component_to_connect, use_arc = False):
+		if use_arc:
+			self.view1 = ArcBetweenPoints(start = component_to_connect.obj.get_center(), end = self.obj.get_center(), arc_center=[component_to_connect.obj.get_center()[0]/2+self.obj.get_center()[0]/2, component_to_connect.obj.get_center()[1]/2+self.obj.get_center()[1]/2, 0], angle=PI)
+		else:
+			self.view1 = Line(start = component_to_connect.obj.get_center(), end = self.obj.get_center())
+		self.view = VGroup(self.view1).set_color(WHITE)
+		groups[group].append(self)
+		component_to_connect.objj.add(self.view)
+		self.input = component_to_connect			
+	def set_value(self, value, default  = True ):
+		if(default == True):
+			self.value = value
+		else:
+			self.value = self.input.value	
 
 
 class comp_or(circuit_component): # or component
@@ -128,6 +159,7 @@ class comp_not(circuit_component): #not component
 class A(Scene):
 	def construct(self):
 		# objects need to be in order.
+		""" 		
 		a = input_dot([1,1,0],0, [1,1,0], text = True)
 		b = dot([2,1,0],1, a)
 		c = input_dot([1,2,0],0, [1,0,1], text = True)
@@ -137,6 +169,15 @@ class A(Scene):
 		g = comp_not(2, f, text = True)
 		h = dot([g.get_x()+0.4, g.get_y()-0.3, 0], 2, g)
 		l = comp_not(2, h, text = True)
+		"""
+		a = isolated_dot( [0,0,0], 0, input = [0,1,2])
+		b = dot([1,0,0], 1, a)
+		c = comp_not(1, b)
+		d = dot([1,1,0], 2, c )
+		e = dot([0,1,0], 2, d)
+		a.update_view(2, e)
+
+
 		# first step is to add all objects to scene
 		for ob in objects:
 			self.add(ob.objj)
@@ -144,16 +185,25 @@ class A(Scene):
 		# animation steps
 		# animate each group with starting values given by the inputs.
 		# obtain values
-		for i in range(0, len(groups[0][0].input)):
+		for i in range(0, 2): # 2 because the input is of size 3
 			for j in range(0, len(groups)):
 				if j == 0: # we are dealing with input dots
 					for obj in groups[j]:
-						# obj is an circuit component object
-						obj.set_value(obj.input[i])
-						obj.set_text()
+						if(obj.is_isolated == True):
+							# obj is an isolated circuit component object
+							obj.set_value(obj.default_input[i], default = True)
+						else:
+							# obj is an circuit component object
+							obj.set_value(obj.input[i])
+						obj.set_text()								
 				else:
 					for obj in groups[j]:
-						obj.set_value()
+						if(obj.is_isolated == True):
+							# obj is an isolated circuit component object
+							obj.set_value(obj.default_input[i], default = False)
+						else:
+							# obj is an circuit component object
+							obj.set_value()
 						obj.set_text()
 				# after all objects in same group have its values updated
 				# we have to update its text and its color with an animation and that's all
