@@ -2,11 +2,10 @@ from manim import*
 #global variable.
 groups = [[],[],[]] # number of grupos de la animación.
 # input dots at group 0
-objects = []
+objects = [] # don't change this. 
 #global variable.
 
-
-class circuit_component:
+class circuit_component: # general class with shared properties.
 	def __init__(self, group, text):
 		self.obj = None
 		self.value = None
@@ -22,7 +21,7 @@ class circuit_component:
 	def set_text(self):
 		self.text = MathTex(f"{self.value}").next_to(self.obj.get_center())
 
-class input_dot(circuit_component):
+class input_dot(circuit_component): # a dot that receives input designed for start of the ciruit.
 	def __init__(self, pos, group , input = [0], text= False ): # input has to be a list.
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(pos)
@@ -33,8 +32,8 @@ class input_dot(circuit_component):
 	def set_value(self, value):
 		self.value = value
 
-class dot(circuit_component):
-	def __init__(self, pos, group , component_to_connect, use_arc = False, text= False ): #  
+class dot(circuit_component): # a simple dot, designed for joining different parts of the circuit.
+	def __init__(self, pos, group , component_to_connect, use_arc = False, text= False): #  
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(pos)
 		self.input = component_to_connect
@@ -50,7 +49,7 @@ class dot(circuit_component):
 		self.value = self.input.value
 
 
-class comp_or(circuit_component):
+class comp_or(circuit_component): # or component
 	def __init__(self, point1, point2, group, text= False ):
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(Line(
@@ -79,8 +78,8 @@ class comp_or(circuit_component):
 	def set_value(self):
 		self.value = self.value = 1 if (self.input[0].value  == 1 or self.input[1].value == 1) else 0	
 
-
-class comp_and(circuit_component):
+ 
+class comp_and(circuit_component): # and component
 	def __init__(self, point1, point2, group, text= False ):
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot(Line(
@@ -106,7 +105,7 @@ class comp_and(circuit_component):
 		self.value = self.value = 1 if (self.input[0].value  == 1 and self.input[1].value == 1) else 0	
 
 
-class comp_not(circuit_component):
+class comp_not(circuit_component): #not component
 	def __init__(self, group , component_to_connect, use_arc = False, text= False ): #  
 		circuit_component.__init__(self, group, text)
 		self.obj = Dot([component_to_connect.get_x()+0.5, component_to_connect.get_y(), 0])
