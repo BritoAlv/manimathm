@@ -107,7 +107,21 @@ class comp_and(circuit_component):
 
 
 class comp_not(circuit_component):
-	# not implemented yet
+	def __init__(self, group , component_to_connect, use_arc = False, text= False ): #  
+		circuit_component.__init__(self, group, text)
+		self.obj = Dot([component_to_connect.get_x()+0.5, component_to_connect.get_y(), 0])
+		self.input = component_to_connect
+		self.view2 = Line(start = self.obj.get_center(), end = [self.obj.get_center()[0]-0.5,self.obj.get_center()[1]+0.3,0])
+		self.view3 = Line(start = self.obj.get_center(), end = [self.obj.get_center()[0]-0.5,self.obj.get_center()[1]-0.3,0])
+		self.view4 = Line(start = self.view2.get_end(), end = self.view3.get_end())	
+		self.view = VGroup(self.view2, self.view3, self.view4)
+		try:
+			the_angle = Line(start = component_to_connect.input.obj.get_center() , end = component_to_connect.obj.get_center()).get_angle()
+		except:
+			the_angle = 0			
+		self.objj = VGroup(self.obj, self.view).rotate(about_point=component_to_connect.obj.get_center(), angle = the_angle ).set_color(WHITE)
+		objects.append(self)
+		groups[group].append(self)
 	def set_value(self):
 		self.value = 0 if self.input.value == 1 else 1
 
@@ -121,6 +135,9 @@ class A(Scene):
 		d = dot([2,2,0], 1, c)
 		e = comp_and(b,d,1, text = True)
 		f = dot([e.get_x()+1,e.get_y(),0], 2, e)
+		g = comp_not(2, f, text = True)
+		h = dot([g.get_x()+0.4, g.get_y()-0.3, 0], 2, g)
+		l = comp_not(2, h, text = True)
 		# first step is to add all objects to scene
 		for ob in objects:
 			self.add(ob.objj)
