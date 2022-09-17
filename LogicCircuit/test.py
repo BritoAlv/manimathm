@@ -203,7 +203,7 @@ class A(Scene):
 		"""
 
 		
-		
+		"""
 		input_size = 3 # your input dots have input of len 2
 		a = cyclic_dot( [0,0,0], 0, input = 1)
 		b = dot([1,0,0], 1, a)
@@ -211,7 +211,7 @@ class A(Scene):
 		d = dot([1,1,0], 2, c )
 		e = dot([0,1,0], 2, d)
 		a.update_view(2, e)
-		
+		"""
 
 		################################################################
 		#### don't change anything below
