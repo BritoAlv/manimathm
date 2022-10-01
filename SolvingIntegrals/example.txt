@@ -1,0 +1,10 @@
+\int \frac{1}{x^2+x+1} dx
+= \int \frac{1}{(x+\frac{1}{2})^2+\frac{3}{4}}dx
+u = x+\frac{1}{2}, du = dx
+= \int \frac{1}{u^2+\frac{3}{4}}du
+= \int \frac{1}{ \frac{3}{4} \left( (\frac{2u}{\sqrt 3})^2 + 1 \right) }du
+t = \frac{2u}{\sqrt{3}}, du = \frac{\sqrt{3}dt}{2}
+= \frac{4\sqrt{3}}{3*2} \int \frac{1}{t^2+1}dt
+= \frac{4\sqrt{3}}{3*2} \arctan(t)
+= \frac{4\sqrt{3}}{3*2} \arctan(\frac{2u}{\sqrt{3}})
+\frac{4\sqrt{3}}{3*2} \arctan(\frac{2(x+\frac{1}{2})}{\sqrt{3}}) + C

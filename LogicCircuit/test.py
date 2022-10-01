@@ -187,9 +187,6 @@ class A(Scene):
 		### input, so they work in the following way, first time is used a default value for
 		### them and after that is value is determined by the circuit and the input appended to it.
 		################################################################
-		input_size = 1
-		"""
-		Scene Example 1
 		input_size = 3 # your input dots have input of len 3 		
 		a = input_dot([1,1,0],0, [1,1,0], text = True)
 		b = dot([2,1,0],1, a)
@@ -200,7 +197,6 @@ class A(Scene):
 		g = comp_not(2, f, text = True)
 		h = dot([g.get_x()+0.4, g.get_y()-0.3, 0], 2, g)
 		l = comp_not(2, h, text = True)
-		"""
 
 		
 		"""
