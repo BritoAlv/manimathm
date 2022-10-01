@@ -24,7 +24,7 @@ class integral(Scene):
             if (i == 2):  # i = 2 is the first substitution
                 old_substitution = manim_steps[i].shift(2*DOWN)
                 self.play(Create(old_substitution))
-            elif (i == 5):  # other substitutions
+            elif (i == 5 or i == 9):  # other substitutions lines
                 new_substitution = manim_steps[i].shift(2.5*DOWN)
                 self.play(ReplacementTransform(
                     old_substitution, new_substitution), run_time=1)
