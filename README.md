@@ -5,3 +5,5 @@
 - una solución a un ejercicio del libro de Análisis Visual Complejo.
 
 - una clase para renderizar circuitos lógicos en Manim.
+
+- un script para representar la resolución de integrales.
