@@ -8,4 +8,6 @@ Para usarlo escribir los pasos en el archivo *example.txt* y ejecutar lo siguien
 manim -pql integrals.py
 ```
 
+**Issues:**
 
+Tengo que especificar en el archivo.py las lineas donde hay una sustitución. 
