@@ -1,5 +1,5 @@
 """
-Given the process of solving an integral using Latex, make an animation of the process, use the example.txt to undersand
+Given the process of solving an integral using Latex, make an animation of the process, use the example.txt to understand
 how generate an animation
 """
 

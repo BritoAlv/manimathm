@@ -8,6 +8,7 @@
 
 - un script para representar la resolución de integrales.
 
+- un teorema de Weiestrass*
 ## Mejoras, Bugs e Ideas Para añadirle.
 
 - Circuitos Lógicos: Necesita mas abstracción y organización, pensarlo más para poder hacerlo más consistente.
