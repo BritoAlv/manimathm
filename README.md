@@ -1,4 +1,4 @@
-## Algunas animaciones hechas con Manim, código aquí y animaciones en Youtube. @BritoALv.
+## Algunas animaciones hechas con Manim, código aquí y animaciones en Youtube. @BritoAlv.
 
 
 
@@ -8,8 +8,11 @@
 
 - un script para representar la resolución de integrales.
 
-- un teorema de Weiestrass*
+- uno de los teoremas de Weierstrass*
+
 ## Mejoras, Bugs e Ideas Para añadirle.
+
+- No hay aplicación ninguna de los patrones de diseño en estos códigos de Manim, so ...
 
 - Circuitos Lógicos: Necesita mas abstracción y organización, pensarlo más para poder hacerlo más consistente.
 
